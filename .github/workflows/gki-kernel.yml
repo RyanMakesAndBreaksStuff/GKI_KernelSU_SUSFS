@@ -339,11 +339,13 @@ jobs:
             # and KSU_IOCTL(GET_DENY_LIST,...) which expand to KSU_IOCTL_GET_ALLOW_LIST /
             # KSU_IOCTL_GET_DENY_LIST, but supercalls.h in that tag does not define these constants.
             # Inject the missing #defines if absent (values match current SukiSU-Ultra main branch).
+            # NOTE: KSU_IOCTL_NEW_GET_ALLOW_LIST uses backslash continuation across two lines;
+            # use /i (insert-before) not /a (append-after) to avoid breaking the line continuation.
             if ! grep -q "^#define KSU_IOCTL_GET_ALLOW_LIST " kernel/supercalls.h 2>/dev/null; then
-              sed -i "/#define KSU_IOCTL_NEW_GET_ALLOW_LIST/a #define KSU_IOCTL_GET_ALLOW_LIST  _IOC(_IOC_READ | _IOC_WRITE, 'K', 6, 0)" kernel/supercalls.h || true
+              sed -i "/#define KSU_IOCTL_NEW_GET_ALLOW_LIST/i #define KSU_IOCTL_GET_ALLOW_LIST  _IOC(_IOC_READ | _IOC_WRITE, 'K', 6, 0)" kernel/supercalls.h || true
             fi
             if ! grep -q "^#define KSU_IOCTL_GET_DENY_LIST " kernel/supercalls.h 2>/dev/null; then
-              sed -i "/#define KSU_IOCTL_NEW_GET_DENY_LIST/a #define KSU_IOCTL_GET_DENY_LIST   _IOC(_IOC_READ | _IOC_WRITE, 'K', 7, 0)" kernel/supercalls.h || true
+              sed -i "/#define KSU_IOCTL_NEW_GET_DENY_LIST/i #define KSU_IOCTL_GET_DENY_LIST   _IOC(_IOC_READ | _IOC_WRITE, 'K', 7, 0)" kernel/supercalls.h || true
             fi
           elif [ "${{ inputs.kernelsu_variant }}" == "ReSukiSU" ]; then
             echo "Applying SUSFS patches for ReSukiSU..."
